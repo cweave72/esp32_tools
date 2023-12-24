@@ -1,0 +1,6 @@
+-e config_generator/
+
+protobuf
+grpcio-tools
+betterproto[compiler]
+gnureadline
