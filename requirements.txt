@@ -2,5 +2,5 @@
 
 protobuf
 grpcio-tools
-betterproto[compiler]
+betterproto[compiler]==2.0.0b6
 gnureadline

@@ -24,6 +24,9 @@ def setup_logging(rootlogger, level, logfile=None):
         fh.setLevel(logging.DEBUG)
         rootlogger.addHandler(fh)
 
-    ch = RichHandler(rich_tracebacks=True, show_time=False)
+    #ch = RichHandler(rich_tracebacks=True, show_time=False)
+    fmt = logging.Formatter(fmt="[%(levelname)6s] %(message)s")
+    ch = logging.StreamHandler()
+    ch.setFormatter(fmt)
     ch.setLevel(loglevels[level])
     rootlogger.addHandler(ch)

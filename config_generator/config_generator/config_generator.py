@@ -1,4 +1,3 @@
-import os
 import os.path as osp
 import shutil
 import sys
@@ -36,9 +35,12 @@ def config_build(proto_path, includes):
     shutil.rmtree(libdir)
     Path(libdir).mkdir()
 
-    logger.debug(f"cmd_str = {' '.join(cmd_str)}")
+    logger.debug(f"cmd_str = {cmd_str}")
     try:
-        protoc.main(cmd_str)
+        ret = protoc.main(cmd_str)
+        if ret == 1:
+            logger.error("Error: protoc returned error.")
+            sys.exit(1)
     except Exception as e:
         logger.error(f"Error in grpc_tools.main(): {str(e)}")
         sys.exit(1)
@@ -47,7 +49,11 @@ def config_build(proto_path, includes):
 def config_write(mod_name, cls_name, data, out):
 
     logger.debug(f"module name={mod_name}; class={cls_name}")
-    mod = importlib.import_module(f"config_generator.lib.{mod_name}")
+
+    if mod_name is not None:
+        mod = importlib.import_module(f"config_generator.lib.{mod_name}")
+    else:
+        mod = importlib.import_module("config_generator.lib")
 
     try:
         cls = getattr(mod, cls_name)
@@ -79,7 +85,7 @@ def cli(ctx, loglevel):
 @cli.command
 @click.argument("protofile")
 @click.option("-i", "--include", multiple=True, help="Include path.")
-@click.option("--mod", default='config', help="Protobuf api module name.")
+@click.option("--mod", help="Protobuf api module name.")
 @click.option("--msgcls", default='Config', help="Protobuf top message class name.")
 @click.option("--yamlfile", required=True, help="YAML file with data.")
 @click.option("--out", required=True, help="Serialized output file.")
