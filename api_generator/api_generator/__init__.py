@@ -1,5 +1,6 @@
 import logging
 from rich.logging import RichHandler
+from rich.console import Console
 
 logger = logging.getLogger(__name__)
 
@@ -24,9 +25,13 @@ def setup_logging(rootlogger, level, logfile=None):
         fh.setLevel(logging.DEBUG)
         rootlogger.addHandler(fh)
 
-    #ch = RichHandler(rich_tracebacks=True, show_time=False)
-    fmt = logging.Formatter(fmt="[%(levelname)6s] %(message)s")
-    ch = logging.StreamHandler()
-    ch.setFormatter(fmt)
+    con = Console()
+    if con.is_terminal:
+        ch = RichHandler(rich_tracebacks=True, show_time=False)
+    else:
+        ch = logging.StreamHandler()
+        fmt = logging.Formatter(fmt="[%(levelname)6s] %(message)s")
+        ch.setFormatter(fmt)
+
     ch.setLevel(loglevels[level])
     rootlogger.addHandler(ch)

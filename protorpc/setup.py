@@ -1,13 +1,12 @@
 from setuptools import setup, find_packages
 
-NAME = "config_generator"
-DESC = "Generates config binaries."
+NAME = "protorpc"
+DESC = "Protobuf rpc library"
 VERSION = "0.1.0"
 
 required = [
     "click",
     "rich",
-    "PyYAML",
 ]
 
 setup(
@@ -16,9 +15,9 @@ setup(
     description=DESC,
     author='cdw',
     entry_points={
-        'console_scripts': [
-            'config_gen=config_generator.config_generator:main'
-        ],
+        #'console_scripts': [
+        #    'api_gen=api_generator.main:main'
+        #],
     },
     packages=find_packages(),
     install_requires=required

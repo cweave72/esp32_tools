@@ -1,4 +1,4 @@
--e config_generator/
+-e api_generator/
 
 protobuf
 grpcio-tools
