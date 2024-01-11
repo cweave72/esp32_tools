@@ -15,9 +15,10 @@ setup(
     description=DESC,
     author='cdw',
     entry_points={
-        #'console_scripts': [
-        #    'api_gen=api_generator.main:main'
-        #],
+        'console_scripts': [
+            'run_protorpc_gen=protorpc.generator.generator:entrypoint',
+            'protoc-gen-protorpc=protorpc.generator.generator:generator_main',
+        ],
     },
     packages=find_packages(),
     install_requires=required
