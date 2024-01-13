@@ -47,7 +47,7 @@ def build_api(frame_cls, conn):
     logger.debug(f"FrameDict={FrameDict}")
 
     for callset in FrameDict:
-        logger.debug(f"Building api for callset {callset}")
+        logger.debug(f"Building api for callset: '{callset}'")
         api[callset] = Api(frame_cls, FrameDict[callset], conn)
 
     return api

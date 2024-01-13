@@ -98,9 +98,12 @@ class Request:
         self.frame = frame_cls()
         self.callset = callset_inst
         self.header = self.frame.header
-        self.reply = Reply(frame_cls)
+        self.reply = Reply(frame_cls, msg_name, msg_inst)
         self.got_reply = False
         self.timedout = False
+
+        self.msg_name = msg_name
+        self.msg_inst = msg_inst
 
         # Set message instance to the frame callset attribute.
         setattr(self.callset, msg_name, msg_inst)
@@ -143,8 +146,13 @@ class Reply:
     """RPC reply class.
     """
 
-    def __init__(self, frame_cls):
+    def __init__(self, frame_cls, call_msg_name, call_msg_inst):
         self.frame = frame_cls()
+        # Save references to the call msg and instance.
+        self.call_msg = call_msg_name
+        self.call_msg_inst = call_msg_inst
+        self.result = None
+        self.success = False
 
     def rcv_handler(self, data):
         """Parses raw received frame into class instance.
@@ -152,9 +160,24 @@ class Reply:
         try:
             self.frame.parse(data)
             logger.debug(f"Decoded frame ({self.status_str}): {self.frame}")
+            if self.status in [0, 3]:
+                self.success = True
+                self.result = self.get_reply_value()
         except Exception as e:
             logger.error(f"Error on frame parse: {str(e)}")
             raise e
+
+    def get_reply_value(self):
+        """Retrieves the message from the recieved frame based on which
+        message was received.
+        """
+        which_callset = self.frame._group_current['callset']
+        callset = getattr(self.frame, which_callset)
+        logger.debug(f"reply: which_callset={which_callset}")
+        which_msg = callset._group_current['msg']
+        logger.debug(f"reply: which_msg={which_msg}")
+        reply_value = getattr(callset, which_msg)
+        return reply_value
 
     @property
     def seqn(self):
@@ -179,7 +202,6 @@ class Reply:
         return status_str
 
 
-
 def call_factory(
     frame_cls,
     conn,
@@ -199,9 +221,7 @@ def call_factory(
                       msg_inst,
                       no_reply=no_reply)
         req.send_sync()
-        if req.got_reply:
-            return req.reply
-        return None
+        return req.reply
     call_func.__name__ = msg_name.rstrip('_call')
     return call_func
 

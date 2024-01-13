@@ -26,7 +26,8 @@ class UdpConnection(BaseConnection):
     def write(self, data: t.ByteString) -> None:
         """Sends data.
         """
-        logger.debug(f"Writing data[{len(data)}]={data} to {self.addr}:{self.port}")
+        logger.debug(f"Writing data[{len(data)}]={self.bytes_to_hex(data, 64)} "
+                     f"to {self.addr}:{self.port}")
         if self.is_connected:
             self.socket.sendto(data, (self.addr, self.port))
         else:
@@ -47,7 +48,7 @@ class UdpConnection(BaseConnection):
             if not data:
                 return None
 
-            logger.debug(f"Received data[{len(data)}]={data}")
+            logger.debug(f"Received data[{len(data)}]={self.bytes_to_hex(data, 64)}")
             return data
 
         except socket.timeout:

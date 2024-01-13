@@ -166,7 +166,7 @@ def label_str(arg: int) -> str:
 
 
 @dataclass
-class HandlerField:
+class FieldType:
     name: str
     type: str
     label: str
@@ -181,8 +181,8 @@ class Handler:
     callset_type: str
     call_name: str
     call_type: str
-    call_fields: List[HandlerField]
-    reply_fields: List[HandlerField]
+    call_fields: List[FieldType]
+    reply_fields: List[FieldType]
 
     def __post_init__(self):
         self.callset_type = f"{self.package}_{self.callset_type}"
@@ -239,10 +239,10 @@ def process_file(file_descr: FileDescriptorProto):
             for field in msg.field:
                 logger.debug(f"   field[{field.number}]: {field.name} {label_str(field.label)} "
                              f"(type={type_str(field.type)} {field.type_name})")
-                fields.append(HandlerField(name=field.name,
-                                           type=type_str(field.type),
-                                           label=label_str(field.label)
-                                           ))
+                fields.append(FieldType(name=field.name,
+                                        type=type_str(field.type),
+                                        label=label_str(field.label)
+                                        ))
 
             msgs[msg.name] = fields
 

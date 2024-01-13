@@ -42,6 +42,15 @@ class BaseConnection(Thread):
         self.stop()
         self.join()
 
+    def bytes_to_hex(self, data: bytes, clamp=None) -> str:
+        """Converts a bytes stream to hex chars.
+        """
+        clamp = len(data) if clamp is None else clamp
+        hex_str = [f"0x{h:02x}," for h in data[:clamp]]
+        if clamp < len(data):
+            return ''.join(hex_str) + '...'
+        return ''.join(hex_str)
+
     def add_pending(self, request):
         """Adds a request to the pending list.
         """
