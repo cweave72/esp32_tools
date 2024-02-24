@@ -1,3 +1,4 @@
+import sys
 import time
 import datetime
 import logging
@@ -132,7 +133,10 @@ class Request:
         if not self.no_reply:
             while True:
                 time.sleep(0.1)
-                if self.timedout or self.got_reply:
+                if self.timedout:
+                    self.reply.set_timedout()
+                    return
+                if self.got_reply:
                     return
 
     @property
@@ -153,6 +157,7 @@ class Reply:
         self.call_msg_inst = call_msg_inst
         self.result = None
         self.success = False
+        self.timedout = False
 
     def rcv_handler(self, data):
         """Parses raw received frame into class instance.
@@ -179,6 +184,18 @@ class Reply:
         reply_value = getattr(callset, which_msg)
         return reply_value
 
+    def set_timedout(self):
+        self.timedout = True
+
+    def exit_on_fail(self, on_exit_func=None):
+        """Checks the return code and exits on failure.
+        """
+        if self.timedout or not self.success:
+            logger.error(f"RPC error: {self.status_str}")
+            if on_exit_func is not None:
+                on_exit_func()
+            sys.exit(1)
+
     @property
     def seqn(self):
         """Gets the reply frame seqn.
@@ -193,6 +210,9 @@ class Reply:
 
     @property
     def status_str(self):
+        if self.timedout:
+            return "REQUEST TIMEOUT"
+
         status_str = {
             0: "SUCCESS",
             1: "BAD_RESOLVER_LOOKUP",

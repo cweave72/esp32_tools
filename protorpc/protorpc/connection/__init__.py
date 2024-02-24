@@ -1,35 +1,62 @@
 import time
 import datetime
 import logging
+import socket
+import typing as t
 from threading import Thread, Event
 from queue import Queue
 
 logger = logging.getLogger(__name__)
 
 
+def setdefault(d: t.Dict, key: t.Any, default: t.Any):
+    """Writes default for dict[key] if key is missing or None.
+    """
+    d.setdefault(key, None)
+    if d[key] is None:
+        d[key] = default
+
+
 class BaseConnection(Thread):
     """Base connection class.
     """
 
-    def __init__(self, name, addr: str, port: int, *args, **kwargs):
+    def __init__(self, name, *args, **kwargs):
+
+        # Extract connection kwargs.
+        self.addr = kwargs.pop('addr', None)
+        self.hostname = kwargs.pop('hostname', None)
+        self.port = kwargs.pop('port', None)
         self.timeout = kwargs.pop('timeout', 2)
+
+        if all(item is None for item in [self.addr, self.hostname]):
+            raise Exception("Either 'addr' or 'hostname' must be provided.")
+
+        # If IP addr is given, this takes precedence.
+        if self.addr is None and self.hostname is not None:
+            try:
+                self.addr = socket.gethostbyname(self.hostname)
+                logger.debug(f"Resolved addr={self.addr} from hostname={self.hostname}")
+            except Exception as e:
+                logger.error(f"Error resolving IP from {self.hostname}: {str(e)}")
+                raise e
+
         super().__init__(*args, **kwargs)
         self.name = name
         self.seqn = 0
 
-        self.addr = addr
-        self.port = port
-
         self.pending_request = None
         self.event = Event()
-
-        self.start()
+        self.daemon = True
 
     def get_next_seqn(self):
         """Iterates and returns the sequence number.
         """
         self.seqn += 1
         return self.seqn
+
+    def shutdown(self):
+        pass
 
     def stop(self):
         """Stops the connection service.

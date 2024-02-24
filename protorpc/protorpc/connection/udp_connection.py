@@ -2,17 +2,21 @@ import logging
 import socket
 import typing as t
 
+from protorpc.connection import setdefault
 from protorpc.connection import BaseConnection
 
 logger = logging.getLogger(__name__)
+
+DEFAULT_PORT = 13000
 
 
 class UdpConnection(BaseConnection):
     """A connection class using UDP.
     """
 
-    def __init__(self, addr: str, port: int, **kwargs):
-        super().__init__('udpconn', addr, port, **kwargs)
+    def __init__(self, **kwargs):
+        setdefault(kwargs, 'port', DEFAULT_PORT)
+        super().__init__('udpconn', **kwargs)
         self.is_connected = False
 
     def connect(self, timeout=1, rcvbuf_size=1024):
@@ -21,6 +25,7 @@ class UdpConnection(BaseConnection):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.socket.settimeout(self.rcv_timeout)
         self.is_connected = True
+        self.start()
         logger.debug(f"UdpConnection connected {self.addr}:{self.port}")
 
     def write(self, data: t.ByteString) -> None:
