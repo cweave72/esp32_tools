@@ -1,6 +1,6 @@
 #!/bin/bash
 
 (\
-source $ESP32_TOOLS/init_env.sh && \
+source $ESP32_TOOLS/.venv/bin/activate && \
 python generator/nanopb_generator.py $@ 1>/dev/null \
 )
