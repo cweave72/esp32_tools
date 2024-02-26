@@ -52,7 +52,7 @@ def cli_init(ctx, params):
                               addr=params.ip,
                               hostname=params.hostname)
     except Exception as e:
-        logger.error(f"Exiting due to api build error: {str(e)}")
+        logger.error("RPC api build error.")
         raise e
 
     return api, conn

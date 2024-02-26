@@ -38,7 +38,7 @@ class BaseConnection(Thread):
                 self.addr = socket.gethostbyname(self.hostname)
                 logger.debug(f"Resolved addr={self.addr} from hostname={self.hostname}")
             except Exception as e:
-                logger.error(f"Error resolving IP from {self.hostname}: {str(e)}")
+                logger.error(f"Error resolving IP for hostname={self.hostname}.")
                 raise e
 
         super().__init__(*args, **kwargs)

@@ -69,8 +69,8 @@ def build_api(frame_cls, **kwargs):
         conn = connectCls(**kwargs)
         conn.connect()
     except Exception as e:
-        logger.error(f"Connection error ({protocol}): {str(e)}")
-        raise(ProtoRpcException(f"{str(e)}"))
+        logger.error(f"Connection error ({protocol}).")
+        raise ProtoRpcException(f"{str(e)}")
 
     api = {}
     parse_fields(frame_cls())
