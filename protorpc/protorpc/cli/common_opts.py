@@ -17,7 +17,7 @@ def cli_common_opts(func):
     """
     @click.option("--loglevel", default='info', help="Debug logging level.")
     @click.option("-d", "--debug", is_flag=True, help="Shortcut for --loglevel=debug.")
-    @click.option("--udp", is_flag=True, help="Use UDP connection.")
+    @click.option("-u", "--udp", is_flag=True, help="Use UDP connection.")
     @click.option("--ip", type=str, help="Device IP address.")
     @click.option("--port", type=int, help="RPC server port.")
     @click.option("--hostname", type=str, help="Device hostname.")

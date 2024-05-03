@@ -166,7 +166,7 @@ class Reply:
             self.frame.parse(data)
             logger.debug(f"Decoded frame ({self.status_str}): {self.frame}")
             if self.status in [0, 3]:
-                self.success = True
+                self.success = True if self.status == 0 else False
                 self.result = self.get_reply_value()
         except Exception as e:
             logger.error(f"Error on frame parse: {str(e)}")

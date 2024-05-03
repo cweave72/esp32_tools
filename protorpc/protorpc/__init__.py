@@ -64,13 +64,13 @@ def build_api(frame_cls, **kwargs):
                                 f"Must be {supported_prots}.")
 
     connectCls = {'tcp': TcpConnection, 'udp': UdpConnection}[protocol]
-    logger.debug(f"Using connection class={connectCls}")
+    logger.debug(f"Using connection class={connectCls.__name__}")
     try:
         conn = connectCls(**kwargs)
         conn.connect()
     except Exception as e:
-        logger.error(f"Connection error ({protocol}).")
-        raise ProtoRpcException(f"{str(e)}")
+        logger.error(f"build_api: Connection error ({protocol}).")
+        raise ProtoRpcException(e)
 
     api = {}
     parse_fields(frame_cls())
