@@ -37,6 +37,7 @@ HEADER_TEMPLATE = """\
 #define {{ proto_name_caps }}_H
 
 #include <stdint.h>
+#include "ProtoRpc.h"
 
 /******************************************************************************
     [docexport {{ proto_name }}_resolver]
@@ -54,8 +55,9 @@ SOURCE_TEMPLATE = """\
  *
  *  @brief: Handlers for {{ proto_name }}.
 *******************************************************************************/
-#include "ProtoRpc.h"
+#include "{{ proto_name }}.h"
 #include "LogPrint.h"
+#include "LogPrint_local.h"
 #include "ProtoRpc.pb.h"
 #include "{{ proto_name }}.pb.h"
 
